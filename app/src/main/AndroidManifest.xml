@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- For the remote audio sources only. They are off until the user turns them on. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar"
+        android:usesCleartextTraffic="true">
+
+        <!-- The settings: the dictionaries, the audio. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            The pop-up. Three ways in: the text selection menu of Android ("SubRead Dictionary"
+            in the menu), the share sheet, and a plain intent from another app such as SubRead
+            Overlay. It has no task of its own, so it opens over the app that sent the text.
+        -->
+        <activity
+            android:name=".LookupActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:label="@string/lookup_label"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:theme="@style/Popup">
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="space.subread.dictionary.LOOKUP" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

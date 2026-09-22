@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SubRead Dictionary</string>
+    <string name="lookup_label">SubRead Dictionary</string>
+
+    <string name="about">A pop-up dictionary for Yomitan dictionaries. Select a text in any app and choose "SubRead Dictionary" in the menu, share a text to it, or send a word from SubRead Overlay. The pop-up shows each term at the start of the text, the longest first, with the reading, the pitch accent, the frequency and the audio.</string>
+    <string name="privacy">Nothing leaves the device, except when a remote audio source is on: then the word goes to that server.</string>
+
+    <string name="step_dictionaries">1. Dictionaries</string>
+    <string name="step_dictionaries_why">Yomitan dictionaries, as .zip files: JMdict, Jitendex, a pitch accent dictionary, a frequency list. The order here is the order in the pop-up.</string>
+    <string name="dictionaries_none">No dictionary yet.</string>
+    <string name="import_dictionary">Import a dictionary (.zip)</string>
+    <string name="importing">Importing %1$s… rows so far: %2$d</string>
+    <string name="import_failed">The import failed: %1$s</string>
+    <string name="import_exists">A dictionary with this title is already imported. Delete it first.</string>
+    <string name="import_format">This dictionary has format %1$d. The app reads format 3.</string>
+    <plurals name="dictionary_terms">
+        <item quantity="one">%1$s — %2$d entry</item>
+        <item quantity="other">%1$s — %2$d entries</item>
+    </plurals>
+    <string name="enable">Enable</string>
+    <string name="disable">Disable</string>
+    <string name="up">↑</string>
+    <string name="delete">Delete</string>
+    <string name="delete_ask">Delete %1$s?</string>
+
+    <string name="step_local_audio">2. Local audio</string>
+    <string name="step_local_audio_why">The android.db of the Local Audio Server for Yomitan, the same file that AnkiConnect Android and Hoshi Reader use. Choose the file; the app copies it. Or push it with adb to the folder below.</string>
+    <string name="local_audio_none">No android.db yet.</string>
+    <string name="local_audio_have">android.db, %1$s</string>
+    <string name="local_audio_choose">Choose android.db</string>
+    <string name="local_audio_copying">Copying android.db: %1$s</string>
+    <string name="local_audio_remove">Remove</string>
+    <string name="local_audio_sources">Order of the sources, comma separated</string>
+    <string name="local_audio_folder">Folder for adb push: %1$s</string>
+
+    <string name="step_remote_audio">3. Remote audio</string>
+    <string name="step_remote_audio_why">One URL per line. {term} and {reading} are replaced. A URL can give an audio file, or the JSON list of a Local Audio Server on the network (http://192.168.1.2:5050/?term={term}&amp;reading={reading}). Used after the local audio.</string>
+    <string name="remote_audio_on">On</string>
+    <string name="remote_audio_off">Off</string>
+    <string name="turn_on">Turn on</string>
+    <string name="turn_off">Turn off</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved.</string>
+
+    <string name="step_size">4. Text size</string>
+    <string name="step_try">5. Try it</string>
+    <string name="try_hint">Type a text</string>
+    <string name="look_up">Look up</string>
+
+    <string name="open_overlay">Open SubRead Overlay</string>
+    <string name="donate">Support the app on Ko-fi</string>
+
+    <string name="no_text">The text is empty.</string>
+    <string name="no_results">No term found. Tap a character to look up from there.</string>
+    <string name="no_dictionaries">No dictionary is enabled. Open the app to import one.</string>
+    <string name="no_audio">No audio for this term.</string>
+    <string name="audio_play">Play</string>
+    <string name="audio_failed">The audio did not play: %1$s</string>
+    <string name="settings">Settings</string>
+    <string name="close">Close</string>
+</resources>
