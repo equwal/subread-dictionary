@@ -34,7 +34,8 @@ class LocalAudio(private val file: File, private val sourceOrder: List<String>) 
         }
         val ordered = rows.sortedBy { sourceOrder.indexOf(it.source).let { i -> if (i < 0) sourceOrder.size else i } }
         return ordered.map { row ->
-            val name = listOfNotNull(label(row.source), row.speaker, row.display).joinToString(" ")
+            // Forvo puts the speaker in both columns: show it once.
+            val name = listOfNotNull(label(row.source), row.speaker, row.display).distinct().joinToString(" ")
             AudioSource(name) {
                 db.rawQuery("SELECT data FROM android WHERE file = ? AND source = ?", arrayOf(row.file, row.source)).use { c ->
                     if (c.moveToFirst()) c.getBlob(0) else null
