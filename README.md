@@ -10,6 +10,15 @@ the audio. A tap on a character of the text looks up from there.
 
 Nothing leaves the device, except when a remote audio source is on.
 
+## Screenshots
+
+<p>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1.png" width="260" alt="The pop-up over a text: the longest term first, with the reading, the pitch accent, the frequency and a Play button">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2.png" width="260" alt="Settings: the list of the imported dictionaries">
+</p>
+
+The pictures are from a Viwoods AiPaper Reader.
+
 ## How to use it
 
 1. Import a dictionary: a Yomitan `.zip` (JMdict, Jitendex, a pitch accent
