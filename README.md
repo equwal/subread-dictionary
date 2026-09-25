@@ -62,6 +62,18 @@ Send a text with any of these; the pop-up opens over your app:
 - `Intent.ACTION_SEND`, `text/plain`, with `EXTRA_TEXT` (the share sheet).
 - The action `space.subread.dictionary.LOOKUP` with `EXTRA_TEXT`.
 
+Ask for the terms of a text, or the audio of a term, without the pop-up: the
+content provider `space.subread.dictionary.lookup`, see
+[docs/provider-api.md](docs/provider-api.md). SubRead Anki uses it.
+
+## Anki cards
+
+With [SubRead Anki](https://github.com/equwal/subread-anki) installed, each
+term in the pop-up has an "Anki" button. One tap makes a card in AnkiDroid:
+the word, the reading, the definitions of each dictionary, the text as the
+sentence, the first audio, and, from SubRead Anki, a screenshot and the
+sentence read by the voice of the device.
+
 ## Build
 
 ```

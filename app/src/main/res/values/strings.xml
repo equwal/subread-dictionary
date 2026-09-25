@@ -49,6 +49,11 @@
     <string name="look_up">Look up</string>
 
     <string name="open_overlay">Open SubRead Overlay</string>
+    <string name="anki_note">One tap on "Anki" in the pop-up makes a card in AnkiDroid: the word, the reading, the definition, the sentence, a screenshot and the audio. SubRead Anki does this.</string>
+    <string name="open_anki">Open SubRead Anki</string>
+    <string name="install_anki">Install SubRead Anki</string>
+    <string name="anki">Anki</string>
+    <string name="anki_failed">SubRead Anki did not take the card.</string>
     <string name="donate">Support the app on Ko-fi</string>
 
     <string name="no_text">The text is empty.</string>

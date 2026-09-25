@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The audio of a card, on its way to SubRead Anki. -->
+<paths>
+    <cache-path name="anki" path="anki/" />
+</paths>

@@ -22,15 +22,18 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
+import space.subread.dictionary.core.AudioType
 import space.subread.dictionary.core.Glossary
 import space.subread.dictionary.core.Lookup
 import space.subread.dictionary.core.Match
+import java.io.File
 import kotlin.concurrent.thread
 
 /**
  * The pop-up. It takes a text from the text selection menu, from the share sheet, or from an
  * intent, and shows the terms at the scan position: the longest first. A tap on a character of
- * the text moves the scan position there.
+ * the text moves the scan position there. With SubRead Anki installed, each term has an "Anki"
+ * button: one tap makes the card.
  */
 class LookupActivity : Activity() {
 
@@ -42,6 +45,7 @@ class LookupActivity : Activity() {
     private var text = ""
     private var offset = 0
     private var generation = 0
+    private var anki = false
 
     // The touch listener finds the character under the finger; it calls performClick itself.
     @SuppressLint("ClickableViewAccessibility")
@@ -50,6 +54,7 @@ class LookupActivity : Activity() {
         store = Store(this)
         dictionaries = Dictionaries(this)
         player = AudioPlayer(this)
+        anki = Anki.installed(this)
 
         // A panel at the bottom, over the app that sent the text. The height is fixed, so the
         // panel does not grow with the results: they scroll inside it.
@@ -165,6 +170,7 @@ class LookupActivity : Activity() {
                 addView(smallButton("▶ " + getString(R.string.audio_play)) { play(expression, reading, choose = false) }.apply {
                     setOnLongClickListener { play(expression, reading, choose = true); true }
                 })
+                if (anki) addView(smallButton(getString(R.string.anki)) { sendToAnki(expression, reading, matches) })
             }, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
 
             val reasons = matches.first().reasons
@@ -200,11 +206,15 @@ class LookupActivity : Activity() {
         }
     }
 
-    /** Plays the first source that has audio: the local ones in their order, then the remote ones. */
+    /** The audio sources of a term: the local ones in their order, then the remote ones. */
+    private fun sources(expression: String, reading: String): List<AudioSource> =
+        LocalAudio(store.localAudioFile, store.localSources.split(',').map { it.trim() }).sources(expression, reading) +
+            if (store.remoteEnabled) RemoteAudio.sources(store.remoteUrls.lines().map { it.trim() }.filter { it.isNotEmpty() }, expression, reading) else emptyList()
+
+    /** Plays the first source that has audio. */
     private fun play(expression: String, reading: String, choose: Boolean) {
         thread {
-            val sources = LocalAudio(store.localAudioFile, store.localSources.split(',').map { it.trim() }).sources(expression, reading) +
-                if (store.remoteEnabled) RemoteAudio.sources(store.remoteUrls.lines().map { it.trim() }.filter { it.isNotEmpty() }, expression, reading) else emptyList()
+            val sources = sources(expression, reading)
             if (choose) {
                 runOnUiThread {
                     if (sources.isEmpty()) toast(getString(R.string.no_audio)) else {
@@ -218,14 +228,47 @@ class LookupActivity : Activity() {
     }
 
     private fun playFirst(sources: List<AudioSource>) {
+        val bytes = loadFirst(sources)
+        runOnUiThread {
+            if (bytes == null) toast(getString(R.string.no_audio))
+            else runCatching { player.play(bytes) }.onFailure { toast(getString(R.string.audio_failed, it.message ?: "")) }
+        }
+    }
+
+    /** The bytes of the first source that has them. */
+    private fun loadFirst(sources: List<AudioSource>): ByteArray? {
         for (source in sources) {
             val bytes = runCatching { source.load() }.getOrNull() ?: continue
-            runOnUiThread {
-                runCatching { player.play(bytes) }.onFailure { toast(getString(R.string.audio_failed, it.message ?: "")) }
-            }
-            return
+            if (bytes.isNotEmpty()) return bytes
         }
-        runOnUiThread { toast(getString(R.string.no_audio)) }
+        return null
+    }
+
+    /**
+     * One tap: the card goes to SubRead Anki with the word, the reading, the definitions of
+     * each dictionary, the text as the sentence, and the first audio. The pop-up hides for a
+     * moment, so that the screenshot of SubRead Anki shows the app under it.
+     */
+    private fun sendToAnki(expression: String, reading: String, matches: List<Match>) {
+        val definition = matches.joinToString("<br><br>") {
+            "<i>${Glossary.escape(it.stored.dictionaryTitle)}</i><br>${Glossary.toHtml(it.stored.term.glossary)}"
+        }
+        val source = referrer?.takeIf { it.scheme == "android-app" }?.host?.let { pkg ->
+            runCatching { packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkg, 0)).toString() }.getOrNull()
+        } ?: ""
+        val decor = window.decorView
+        decor.visibility = View.INVISIBLE
+        thread {
+            val audio = loadFirst(sources(expression, reading))?.let { bytes ->
+                val dir = File(cacheDir, "anki").apply { mkdirs() }
+                File(dir, "word-${System.nanoTime()}.${AudioType.extension(bytes)}").also { it.writeBytes(bytes) }
+            }
+            runOnUiThread {
+                runCatching { startActivity(Anki.intent(this, expression, reading, definition, text, source, audio)) }
+                    .onFailure { toast(getString(R.string.anki_failed)) }
+                decor.postDelayed({ decor.visibility = View.VISIBLE }, HIDE_MS)
+            }
+        }
     }
 
     private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
@@ -247,4 +290,9 @@ class LookupActivity : Activity() {
     }
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
+
+    private companion object {
+        /** How long the pop-up hides while SubRead Anki takes its screenshot. */
+        const val HIDE_MS = 1500L
+    }
 }

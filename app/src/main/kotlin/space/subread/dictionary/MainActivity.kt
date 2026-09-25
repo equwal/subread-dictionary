@@ -147,6 +147,13 @@ class MainActivity : Activity() {
 
         val overlay = packageManager.getLaunchIntentForPackage(OVERLAY_PACKAGE)
         if (overlay != null) content.addView(button(getString(R.string.open_overlay)) { runCatching { startActivity(overlay) } }, wide(top = 24))
+        note(getString(R.string.anki_note), top = 24)
+        val anki = packageManager.getLaunchIntentForPackage(Anki.PACKAGE)
+        if (anki != null) {
+            content.addView(button(getString(R.string.open_anki)) { runCatching { startActivity(anki) } }, wide())
+        } else {
+            content.addView(button(getString(R.string.install_anki)) { open(Anki.INSTALL) }, wide())
+        }
         if (BuildConfig.DONATE_LINK) content.addView(button(getString(R.string.donate)) { open(KOFI) }, wide())
     }
 

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- For the remote audio sources only. They are off until the user turns them on. -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- SubRead Anki takes a card from the pop-up. Android hides other apps without this list. -->
+    <queries>
+        <package android:name="space.subread.anki" />
+    </queries>
 
     <application
         android:allowBackup="false"
@@ -50,5 +56,26 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!--
+            Gives the terms of a text and the audio of a term to another app: SubRead Anki. The
+            dictionaries are public data, so the provider has no permission. See LookupProvider.
+        -->
+        <provider
+            android:name=".LookupProvider"
+            android:authorities="${applicationId}.lookup"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
+
+        <!-- SubRead Anki reads the audio of a card through this provider. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/files" />
+        </provider>
     </application>
 </manifest>
