@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- For the remote audio sources only. They are off until the user turns them on. -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -50,5 +51,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!--
+            Gives the terms of a text, and the audio of a term, to another app. SubRead Anki
+            fills its cards from it. See LookupProvider.
+        -->
+        <provider
+            android:name=".LookupProvider"
+            android:authorities="${applicationId}.lookup"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
     </application>
 </manifest>

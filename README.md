@@ -62,6 +62,32 @@ Send a text with any of these; the pop-up opens over your app:
 - `Intent.ACTION_SEND`, `text/plain`, with `EXTRA_TEXT` (the share sheet).
 - The action `space.subread.dictionary.LOOKUP` with `EXTRA_TEXT`.
 
+An app that wants the terms as data, not as a pop-up, asks the content
+provider. [SubRead Anki](https://github.com/equwal/subread-anki) fills its
+cards from it:
+
+```kotlin
+val uri = Uri.parse("content://space.subread.dictionary.lookup/lookup").buildUpon()
+    .appendQueryParameter("text", "食べたい").build()
+contentResolver.query(uri, null, null, null, null)
+```
+
+One row for each term of each enabled dictionary, the longest term first,
+the same as the pop-up. The columns: `expression`, `reading`, `length` (the
+characters of the text that the term covers), `reasons` (the deinflection
+steps), `dictionary`, `glossary` (simple HTML), `frequency`, `pitch`, and
+`audio`. The extra `offset` is the scan position in the text. `audio` is a
+Uri of the provider, or null when no audio source is set up:
+`openInputStream` on it gives the bytes of the first source that has the
+term, or throws `FileNotFoundException`. The bytes say the format;
+`getType` names it. Declare the package in the manifest of the asking app:
+
+```xml
+<queries>
+    <package android:name="space.subread.dictionary" />
+</queries>
+```
+
 ## Build
 
 ```
