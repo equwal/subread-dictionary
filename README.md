@@ -25,7 +25,9 @@ The pictures are from a Viwoods AiPaper Reader.
    accent dictionary, a frequency list). You can choose more than one file in
    the picker. The app imports them one after another, and then shows the
    result of each file. The app reads format 3. The order of the
-   dictionaries in the settings is the order in the pop-up.
+   dictionaries in the settings is the order in the pop-up. To change it,
+   drag a dictionary up or down by its handle. With TalkBack, the handle has
+   the actions "Move up" and "Move down".
 2. Local audio, optional: choose the `android.db` of the
    [Local Audio Server for Yomitan](https://github.com/yomidevs/local-audio-yomichan),
    the same file that AnkiConnect Android and Hoshi Reader use. The app copies
@@ -52,6 +54,7 @@ on "Play" lists every source.
   dictionary form of it, in one query.
 - `Glossary` turns the structured content of a term into the simple HTML
   that a `TextView` shows.
+- `Reorder` finds where a dragged row goes, and gives the new order.
 
 `:app` has the SQLite store of the terms, the settings screen, the pop-up and
 the audio.

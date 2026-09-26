@@ -10,15 +10,19 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.text.InputType
+import android.view.Gravity
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
 import space.subread.dictionary.core.DictionaryFormatException
+import space.subread.dictionary.core.Reorder
 import space.subread.dictionary.core.YomitanZip
 import java.io.File
 import kotlin.concurrent.thread
@@ -74,27 +78,36 @@ class MainActivity : Activity() {
         }
         val list = dictionaries.list()
         if (list.isEmpty()) note(getString(R.string.dictionaries_none))
-        for (dictionary in list) {
-            note(
-                resources.getQuantityString(R.plurals.dictionary_terms, dictionary.terms, dictionary.title, dictionary.terms),
-                color = if (dictionary.enabled) Color.BLACK else Color.GRAY,
-            )
-            row(
-                button(getString(if (dictionary.enabled) R.string.disable else R.string.enable)) {
+        val rows = DragList(this) { from, to -> move(list, from, to) }
+        for ((i, dictionary) in list.withIndex()) {
+            val handle = ImageView(this).apply {
+                setImageResource(R.drawable.drag)
+                setPadding(dp(12), dp(12), dp(12), dp(12))
+                contentDescription = getString(R.string.move_handle, dictionary.title)
+                if (i > 0) ViewCompat.addAccessibilityAction(this, getString(R.string.move_up)) { _, _ -> move(list, i, i - 1); true }
+                if (i < list.lastIndex) ViewCompat.addAccessibilityAction(this, getString(R.string.move_down)) { _, _ -> move(list, i, i + 1); true }
+            }
+            val row = LinearLayout(this).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                addView(handle, LinearLayout.LayoutParams(dp(48), dp(48)))
+                addView(TextView(this@MainActivity).apply {
+                    text = resources.getQuantityString(R.plurals.dictionary_terms, dictionary.terms, dictionary.title, dictionary.terms)
+                    textSize = 15f
+                    setTextColor(if (dictionary.enabled) Color.BLACK else Color.GRAY)
+                }, LinearLayout.LayoutParams(0, -2, 1f))
+                addView(smallButton(getString(if (dictionary.enabled) R.string.disable else R.string.enable)) {
                     dictionaries.setEnabled(dictionary.id, !dictionary.enabled)
                     draw()
-                },
-                button(getString(R.string.up)) {
-                    dictionaries.moveUp(dictionary.id)
-                    draw()
-                },
-                button(getString(R.string.delete)) {
-                    AlertDialog.Builder(this).setMessage(getString(R.string.delete_ask, dictionary.title))
+                })
+                addView(smallButton(getString(R.string.delete)) {
+                    AlertDialog.Builder(this@MainActivity).setMessage(getString(R.string.delete_ask, dictionary.title))
                         .setPositiveButton(R.string.delete) { _, _ -> thread { dictionaries.delete(dictionary.id); runOnUiThread { draw() } } }
                         .setNegativeButton(android.R.string.cancel, null).show()
-                },
-            )
+                })
+            }
+            rows.add(row, handle, wide(top = 4))
         }
+        content.addView(rows, wide())
 
         // 2. Local audio
         val audio = store.localAudioFile
@@ -164,6 +177,12 @@ class MainActivity : Activity() {
             PICK_DICTIONARY -> importDictionaries(picked(data))
             PICK_AUDIO -> data.data?.let { copyAudio(it) }
         }
+    }
+
+    /** Saves the order with one dictionary at a new place, then draws the screen again. */
+    private fun move(list: List<DictionaryInfo>, from: Int, to: Int) {
+        dictionaries.reorder(Reorder.move(list.map { it.id }, from, to))
+        draw()
     }
 
     /** The files of a pick. With more than one file, the picker puts them in the clip data. */
@@ -295,6 +314,13 @@ class MainActivity : Activity() {
         text = label
         isAllCaps = false
         setOnClickListener { onClick() }
+    }
+
+    /** A button in the row of a dictionary: as wide as its text, so that the title keeps the most space. */
+    private fun smallButton(label: String, onClick: () -> Unit) = button(label, onClick).apply {
+        textSize = 13f
+        minWidth = 0
+        minimumWidth = 0
     }
 
     private fun wide(top: Int = 8) = LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(top) }

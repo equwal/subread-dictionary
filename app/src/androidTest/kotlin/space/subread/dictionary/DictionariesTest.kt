@@ -91,11 +91,20 @@ class DictionariesTest {
     }
 
     @Test
-    fun orderFollowsMoveUp() {
-        val a = dictionaries.import(DictionaryIndex("A", "1", 3), ByteArrayInputStream(zip("term_bank_1.json" to "[]"))) {}
-        val b = dictionaries.import(DictionaryIndex("B", "1", 3), ByteArrayInputStream(zip("term_bank_1.json" to "[]"))) {}
-        assertEquals(listOf(a.id, b.id), dictionaries.list().map { it.id })
-        dictionaries.moveUp(b.id)
-        assertEquals(listOf(b.id, a.id), dictionaries.list().map { it.id })
+    fun orderFollowsReorder() {
+        fun empty(title: String) = dictionaries.import(DictionaryIndex(title, "1", 3), ByteArrayInputStream(zip("term_bank_1.json" to "[]"))) {}
+        val a = empty("A")
+        val b = empty("B")
+        val c = empty("C")
+        assertEquals(listOf(a.id, b.id, c.id), dictionaries.list().map { it.id })
+        // The first one goes to the end, then back to the middle.
+        dictionaries.reorder(listOf(b.id, c.id, a.id))
+        assertEquals(listOf(b.id, c.id, a.id), dictionaries.list().map { it.id })
+        assertEquals(listOf(0, 1, 2), dictionaries.list().map { it.position })
+        dictionaries.reorder(listOf(b.id, a.id, c.id))
+        assertEquals(listOf(b.id, a.id, c.id), dictionaries.list().map { it.id })
+        // A new import goes to the end.
+        val d = empty("D")
+        assertEquals(listOf(b.id, a.id, c.id, d.id), dictionaries.list().map { it.id })
     }
 }

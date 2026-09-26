@@ -119,14 +119,11 @@ class Dictionaries(context: Context, name: String = "dictionaries.db") : SQLiteO
         writableDatabase.execSQL("UPDATE dictionaries SET enabled = ? WHERE id = ?", arrayOf<Any>(if (enabled) 1 else 0, id))
     }
 
-    /** Moves a dictionary one place up in the order. The first one stays. */
-    fun moveUp(id: Long) {
-        val all = list()
-        val i = all.indexOfFirst { it.id == id }
-        if (i <= 0) return
-        val db = writableDatabase
-        db.execSQL("UPDATE dictionaries SET position = ? WHERE id = ?", arrayOf<Any>(all[i - 1].position, id))
-        db.execSQL("UPDATE dictionaries SET position = ? WHERE id = ?", arrayOf<Any>(all[i].position, all[i - 1].id))
+    /** Saves a new order, in one transaction: the position of each dictionary is its index in `ids`. */
+    fun reorder(ids: List<Long>) {
+        writableDatabase.transaction {
+            ids.forEachIndexed { i, id -> execSQL("UPDATE dictionaries SET position = ? WHERE id = ?", arrayOf<Any>(i, id)) }
+        }
     }
 
     override fun terms(texts: Collection<String>): List<StoredTerm> {

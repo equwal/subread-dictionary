@@ -7,7 +7,7 @@
     <string name="privacy">Nothing leaves the device, except when a remote audio source is on: then the word goes to that server.</string>
 
     <string name="step_dictionaries">1. Dictionaries</string>
-    <string name="step_dictionaries_why">Yomitan dictionaries, as .zip files: JMdict, Jitendex, a pitch accent dictionary, a frequency list. You can choose more than one file. The order here is the order in the pop-up.</string>
+    <string name="step_dictionaries_why">Yomitan dictionaries, as .zip files: JMdict, Jitendex, a pitch accent dictionary, a frequency list. You can choose more than one file. The order here is the order in the pop-up. To change the order, drag a dictionary by its handle.</string>
     <string name="dictionaries_none">No dictionary yet.</string>
     <string name="import_dictionary">Import dictionaries (.zip)</string>
     <string name="import_file">%1$d of %2$d: %3$s</string>
@@ -29,7 +29,9 @@
     </plurals>
     <string name="enable">Enable</string>
     <string name="disable">Disable</string>
-    <string name="up">↑</string>
+    <string name="move_handle">Move %1$s up or down</string>
+    <string name="move_up">Move up</string>
+    <string name="move_down">Move down</string>
     <string name="delete">Delete</string>
     <string name="delete_ask">Delete %1$s?</string>
 
