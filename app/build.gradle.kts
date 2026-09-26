@@ -24,8 +24,8 @@ android {
         minSdk = 26
         targetSdk = 36
         // Plain numbers, in this file: F-Droid reads them from here to find a new release.
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // A link to the Ko-fi page. Google Play is not given it (-PplayStore=true).
@@ -46,7 +46,10 @@ android {
     buildTypes {
         debug { applicationIdSuffix = ".debug" }
         release {
-            isMinifyEnabled = false
+            // R8 removes unused code and resources. F-Droid asks for it.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
             if (signingReady) signingConfig = signingConfigs.getByName("release")
         }
     }

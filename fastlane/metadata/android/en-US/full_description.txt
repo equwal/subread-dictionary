@@ -1,0 +1,28 @@
+SubRead Dictionary is a pop-up dictionary for Yomitan dictionaries.
+
+<b>How to look up a word</b>
+<ul>
+<li>Select a text in any app and choose "SubRead Dictionary" in the text selection menu.</li>
+<li>Share a text to the app.</li>
+<li>Send a word from SubRead Overlay.</li>
+</ul>
+
+The pop-up opens over the app. It shows each term at the start of the text, the longest term first, with the reading, the pitch accent, the frequency and a button for the audio. A tap on a character of the text looks up the text from that character.
+
+<b>Dictionaries</b>
+Import a Yomitan .zip file (format 3), for example JMdict, Jitendex, a pitch accent dictionary or a frequency list. The order of the dictionaries in the settings is their order in the pop-up.
+
+<b>Audio</b>
+<ul>
+<li>Local audio: choose the android.db file of the Local Audio Server for Yomitan. The app copies it into its folder.</li>
+<li>Remote audio: optional and off by default. Give one URL per line, with {term} and {reading}. The default line is JapanesePod101. A Local Audio Server on your network also works.</li>
+</ul>
+
+<b>Anki</b>
+The "Anki" button of a term sends the term to SubRead Anki, which makes the card.
+
+<b>Other apps</b>
+Other apps can read the terms of a text through a content provider.
+
+<b>Privacy</b>
+Nothing leaves the device, except when a remote audio source is on. Then the word goes to that server.
