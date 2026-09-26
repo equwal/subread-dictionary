@@ -7,12 +7,21 @@
     <string name="privacy">Nothing leaves the device, except when a remote audio source is on: then the word goes to that server.</string>
 
     <string name="step_dictionaries">1. Dictionaries</string>
-    <string name="step_dictionaries_why">Yomitan dictionaries, as .zip files: JMdict, Jitendex, a pitch accent dictionary, a frequency list. The order here is the order in the pop-up.</string>
+    <string name="step_dictionaries_why">Yomitan dictionaries, as .zip files: JMdict, Jitendex, a pitch accent dictionary, a frequency list. You can choose more than one file. The order here is the order in the pop-up.</string>
     <string name="dictionaries_none">No dictionary yet.</string>
-    <string name="import_dictionary">Import a dictionary (.zip)</string>
-    <string name="importing">Importing %1$s… rows so far: %2$d</string>
+    <string name="import_dictionary">Import dictionaries (.zip)</string>
+    <string name="import_file">%1$d of %2$d: %3$s</string>
+    <plurals name="importing">
+        <item quantity="one">%1$d of %2$d: %3$s: %4$d row</item>
+        <item quantity="other">%1$d of %2$d: %3$s: %4$d rows</item>
+    </plurals>
+    <plurals name="imported">
+        <item quantity="one">%1$s: imported, %2$d row</item>
+        <item quantity="other">%1$s: imported, %2$d rows</item>
+    </plurals>
     <string name="import_failed">The import failed: %1$s</string>
-    <string name="import_exists">A dictionary with this title is already imported. Delete it first.</string>
+    <string name="import_file_failed">%1$s: the import failed. %2$s</string>
+    <string name="import_exists">%1$s: a dictionary with this title is already imported. Delete it first to import it again.</string>
     <string name="import_format">This dictionary has format %1$d. The app reads format 3.</string>
     <plurals name="dictionary_terms">
         <item quantity="one">%1$s — %2$d entry</item>

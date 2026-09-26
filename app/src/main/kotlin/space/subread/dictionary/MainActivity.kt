@@ -68,7 +68,7 @@ class MainActivity : Activity() {
         // 1. Dictionaries
         step(R.string.step_dictionaries, getString(R.string.step_dictionaries_why), getString(R.string.import_dictionary)) {
             startActivityForResult(
-                Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*"),
+                Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*").putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true),
                 PICK_DICTIONARY,
             )
         }
@@ -159,32 +159,55 @@ class MainActivity : Activity() {
 
     @Deprecated("The platform Activity has no other result API, and this app has no AndroidX activity.")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val uri = data?.data
-        if (resultCode != RESULT_OK || uri == null) return
+        if (resultCode != RESULT_OK || data == null) return
         when (requestCode) {
-            PICK_DICTIONARY -> importDictionary(uri)
-            PICK_AUDIO -> copyAudio(uri)
+            PICK_DICTIONARY -> importDictionaries(picked(data))
+            PICK_AUDIO -> data.data?.let { copyAudio(it) }
         }
     }
 
-    /** Reads the index, then the banks, on a thread. A dialog shows the count. */
-    private fun importDictionary(uri: Uri) {
-        val dialog = AlertDialog.Builder(this).setMessage(displayName(uri)).setCancelable(false).show()
+    /** The files of a pick. With more than one file, the picker puts them in the clip data. */
+    private fun picked(data: Intent): List<Uri> {
+        val clip = data.clipData ?: return listOfNotNull(data.data)
+        return (0 until clip.itemCount).mapNotNull { clip.getItemAt(it).uri }
+    }
+
+    /**
+     * Imports the files one after another, on one thread. Each file is its own transaction, so a
+     * file that fails does not stop the others. A dialog shows the file and the count. At the
+     * end, a dialog gives the result of each file.
+     */
+    private fun importDictionaries(uris: List<Uri>) {
+        if (uris.isEmpty()) return
+        val names = uris.map { displayName(it) }
+        val dialog = AlertDialog.Builder(this).setMessage(getString(R.string.import_file, 1, uris.size, names[0])).setCancelable(false).show()
         thread {
-            val result = runCatching {
-                val index = contentResolver.openInputStream(uri)!!.use { YomitanZip.readIndex(it) }
-                if (index.format != 3) throw DictionaryFormatException(getString(R.string.import_format, index.format))
-                if (dictionaries.hasTitle(index.title)) throw DictionaryFormatException(getString(R.string.import_exists))
-                contentResolver.openInputStream(uri)!!.use { zip ->
-                    dictionaries.import(index, zip) { count -> runOnUiThread { dialog.setMessage(getString(R.string.importing, index.title, count)) } }
+            val results = uris.mapIndexed { i, uri ->
+                runOnUiThread { dialog.setMessage(getString(R.string.import_file, i + 1, uris.size, names[i])) }
+                importDictionary(uri, names[i]) { title, rows ->
+                    runOnUiThread { dialog.setMessage(resources.getQuantityString(R.plurals.importing, rows, i + 1, uris.size, title, rows)) }
                 }
             }
             runOnUiThread {
                 dialog.dismiss()
-                result.onFailure { toast(getString(R.string.import_failed, it.message ?: it.javaClass.simpleName)) }
+                AlertDialog.Builder(this).setMessage(results.joinToString("\n")).setPositiveButton(android.R.string.ok, null).show()
                 draw()
             }
         }
+    }
+
+    /** Reads the index, then the banks, of one file. Gives the line of this file for the result dialog. */
+    private fun importDictionary(uri: Uri, name: String, progress: (title: String, rows: Int) -> Unit): String {
+        val result = runCatching {
+            val index = contentResolver.openInputStream(uri)!!.use { YomitanZip.readIndex(it) }
+            if (index.format != 3) throw DictionaryFormatException(getString(R.string.import_format, index.format))
+            if (dictionaries.hasTitle(index.title)) return getString(R.string.import_exists, name)
+            contentResolver.openInputStream(uri)!!.use { zip -> dictionaries.import(index, zip) { rows -> progress(index.title, rows) } }
+        }
+        return result.fold(
+            { resources.getQuantityString(R.plurals.imported, it.terms, name, it.terms) },
+            { getString(R.string.import_file_failed, name, it.message ?: it.javaClass.simpleName) },
+        )
     }
 
     /** Copies the android.db into the app folder. It can be gigabytes, so the dialog shows the size so far. */

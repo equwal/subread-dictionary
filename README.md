@@ -21,8 +21,10 @@ The pictures are from a Viwoods AiPaper Reader.
 
 ## How to use it
 
-1. Import a dictionary: a Yomitan `.zip` (JMdict, Jitendex, a pitch accent
-   dictionary, a frequency list). The app reads format 3. The order of the
+1. Import dictionaries: Yomitan `.zip` files (JMdict, Jitendex, a pitch
+   accent dictionary, a frequency list). You can choose more than one file in
+   the picker. The app imports them one after another, and then shows the
+   result of each file. The app reads format 3. The order of the
    dictionaries in the settings is the order in the pop-up.
 2. Local audio, optional: choose the `android.db` of the
    [Local Audio Server for Yomitan](https://github.com/yomidevs/local-audio-yomichan),
