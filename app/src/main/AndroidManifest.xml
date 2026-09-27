@@ -18,9 +18,13 @@
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar"
         android:usesCleartextTraffic="true">
 
-        <!-- The settings: the dictionaries, the audio. -->
+        <!--
+            The settings: the dictionaries, the audio. A turn of the screen keeps the activity:
+            an import of several files takes minutes, and a new activity would stop it.
+        -->
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

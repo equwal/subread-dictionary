@@ -15,6 +15,19 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+/** The settings screen stays when the screen turns, so that an import of several files goes on. */
+@RunWith(AndroidJUnit4::class)
+class SettingsTest {
+
+    @Test
+    fun aTurnOfTheScreenKeepsTheSettings() {
+        val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+        val info = context.packageManager.getActivityInfo(android.content.ComponentName(context, MainActivity::class.java), 0)
+        val turn = android.content.pm.ActivityInfo.CONFIG_ORIENTATION or android.content.pm.ActivityInfo.CONFIG_SCREEN_SIZE
+        assertEquals(turn, info.configChanges and turn)
+    }
+}
+
 /** The import into SQLite and the lookup through it, on a device. */
 @RunWith(AndroidJUnit4::class)
 class DictionariesTest {
